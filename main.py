@@ -1,3 +1,6 @@
+# pip install langchain-community
+
+
 import streamlit as st
 import os
 import getpass
