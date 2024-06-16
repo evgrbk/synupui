@@ -1,5 +1,5 @@
 # pip install langchain-community
-
+# pip install langchain-openai
 
 import streamlit as st
 import os
