@@ -272,7 +272,7 @@ def answer_function(topic, system=system, index_db=db, temp=0.2):
         messages=messages,
         model="gpt-4o",
         temperature=temp,
-        max_tokens=256
+        max_tokens=1000
         # functions=function_descriptions,  # Add function calling
         # function_call="auto"  # specify the function call
     )
@@ -387,6 +387,21 @@ system = st.text_area(
     <br/>
     Наименование программы: SMM-маркетинг,<br/>
     Номер программы: "19", <br/>
+    комментарий:"Твой комментарий о программе 2", <br/>
+    Ссылка:<a href="Ссылка">SMM-маркетинг</a><br/>
+    <br/>
+    Наименование программы: SMM-маркетинг,<br/>
+    Номер программы: "20", <br/>
+    комментарий:"Твой комментарий о программе 2", <br/>
+    Ссылка:<a href="Ссылка">SMM-маркетинг</a><br/>
+    <br/>
+    Наименование программы: SMM-маркетинг,<br/>
+    Номер программы: "203", <br/>
+    комментарий:"Твой комментарий о программе 2", <br/>
+    Ссылка:<a href="Ссылка">SMM-маркетинг</a><br/>
+    <br/>
+    Наименование программы: SMM-маркетинг,<br/>
+    Номер программы: "195", <br/>
     комментарий:"Твой комментарий о программе 2", <br/>
     Ссылка:<a href="Ссылка">SMM-маркетинг</a><br/>
 
