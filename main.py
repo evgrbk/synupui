@@ -195,7 +195,7 @@ Cсылка(url) курса Adobe Photoshop: https://synergyupgrade.ru/product/a
 # Функция создания индексной базы знаний
 def create_index_db():
     source_chunks = []
-    splitter = CharacterTextSplitter(separator="\n", chunk_size=1024, chunk_overlap=0)
+    splitter = CharacterTextSplitter(separator="\n", chunk_size=512, chunk_overlap=0)
 
     for chunk in splitter.split_text(database):
         source_chunks.append(Document(page_content=chunk, metadata={}))
@@ -412,6 +412,13 @@ system = st.text_area(
 
 # st.write(f"You wrote {len(txt)} characters.")
 query = st.text_input("Введите запрос", '')
+# st.write("### similarity_search")
+# docs = db.similarity_search('маркетинг', k=5)
+#
+# message_content = re.sub(r'\n{2}', ' ', '\n '.join(
+#     [f'\n#### Document excerpt №{i + 1}####\n' + doc.page_content + '\n' for i, doc in enumerate(docs)]))
+#
+# st.write(message_content)
 
 answer = ''
 if query:
