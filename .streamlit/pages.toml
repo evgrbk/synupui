@@ -1,0 +1,14 @@
+[[pages]]
+path = "main.py"
+name = "Главная"
+icon = ":house:"
+
+[[pages]]
+path = "pages/prompts.py"
+name = "Промпты"
+icon = ":books:"
+
+[[pages]]
+path = "pages/billing.py"
+name = "Биллинг"
+icon = "📖"

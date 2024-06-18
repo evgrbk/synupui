@@ -20,6 +20,7 @@ from langchain.prompts import PromptTemplate
 from langchain_community.vectorstores import FAISS
 # from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_openai.embeddings import OpenAIEmbeddings
+from sqlalchemy import text
 
 # from langchain_openai import ChatOpenAI,OpenAIEmbedding
 # from langchain_community.chat_models import ChatOpenAI
@@ -410,6 +411,34 @@ system = st.text_area(
     height=300
 )
 
+conn = st.connection('course_db', type='sql')
+from datetime import datetime
+
+if st.button('Сохранить'):
+    with conn.session as s:
+        s.execute(
+            text('INSERT INTO prompts (id, text, datetime) VALUES (:id, :text, datetime(:datetime));'),
+            params=dict(id=1, text=system, datetime=datetime.now())
+        )
+        s.commit()
+    # st.rerun()
+
+st.title('SYNUP')
+# from st_pages import Page, show_pages, add_page_title
+# from pathlib import Path
+# Specify what pages should be shown in the sidebar, and what their titles and icons
+# should be
+# st.code(Path(".streamlit/pages.toml").read_text(), language="toml")
+from st_pages import show_pages_from_config
+show_pages_from_config()
+# show_pages(
+#     [
+#         Page("main.py", "Главная", "🏠"),
+#         Page("pages/prompts.py", "Prompt", ":books:"),
+#         Page("pages/billing.py", "Billing", ":dollar:"),
+#     ]
+# )
+st.sidebar.success("Select a page")
 # st.write(f"You wrote {len(txt)} characters.")
 query = st.text_input("Введите запрос", '')
 # st.write("### similarity_search")
@@ -421,8 +450,8 @@ query = st.text_input("Введите запрос", '')
 # st.write(message_content)
 
 answer = ''
-if query:
-    answer, completion = answer_function(topic=query, system=system)  # получите ответ модели
+# if query:
+    # answer, completion = answer_function(topic=query, system=system)  # получите ответ модели
 
 # print(answer)
 
@@ -434,6 +463,7 @@ st.write("### Ответ")
 # st.code(f"{answer}!", language='python')
 st.markdown(f"{answer}", unsafe_allow_html=True)
 # st.write(f"{answer}!")
+
 
 # [
 #     {
