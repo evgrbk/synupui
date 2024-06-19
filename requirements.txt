@@ -6,4 +6,3 @@ tiktoken
 langchain-community
 langchain-openai
 SQLAlchemy
-st-pages

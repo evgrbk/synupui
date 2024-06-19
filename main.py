@@ -21,7 +21,10 @@ from langchain_community.vectorstores import FAISS
 # from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_openai.embeddings import OpenAIEmbeddings
 from sqlalchemy import text
-
+# from st_pages import show_pages_from_config
+# show_pages_from_config()
+from menu import menu
+menu()
 # from langchain_openai import ChatOpenAI,OpenAIEmbedding
 # from langchain_community.chat_models import ChatOpenAI
 # from langchain_community.llms import OpenAI
@@ -35,7 +38,8 @@ from sqlalchemy import text
 # s = gTTS(text_sp, lang=language, slow=False)
 # s.save(os.path.abspath('./sample.mp3'))
 # playsound(os.path.abspath('./sample.mp3'))
-
+# st.set_page_config(
+#     layout="wide")
 # from mutagen.mp3 import MP3
 # import time
 # import miniaudio
@@ -422,15 +426,14 @@ if st.button('Сохранить'):
         )
         s.commit()
     # st.rerun()
-
+    st.success('Промт успешно сохранен!')
 st.title('SYNUP')
 # from st_pages import Page, show_pages, add_page_title
 # from pathlib import Path
 # Specify what pages should be shown in the sidebar, and what their titles and icons
 # should be
 # st.code(Path(".streamlit/pages.toml").read_text(), language="toml")
-from st_pages import show_pages_from_config
-show_pages_from_config()
+
 # show_pages(
 #     [
 #         Page("main.py", "Главная", "🏠"),
@@ -438,7 +441,24 @@ show_pages_from_config()
 #         Page("pages/billing.py", "Billing", ":dollar:"),
 #     ]
 # )
+# menu = '''<ul data-testid="stSidebarNavItems" class="st-emotion-cache-10rjk4g eczjsme14"><li><div
+# class="st-emotion-cache-j7qwjs eczjsme12"><a data-testid="stSidebarNavLink" href="http://localhost:8501/"
+# class="st-emotion-cache-nziaof eczjsme11"><span aria-hidden="true" class="st-emotion-cache-8hkptd
+# eyeqlp50">🏠</span><span class="st-emotion-cache-pkbazv eczjsme10">Главная</span></a></div></li><li><div
+# class="st-emotion-cache-j7qwjs eczjsme12"><a data-testid="stSidebarNavLink" href="http://localhost:8501/prompts"
+# class="st-emotion-cache-18l0hbk eczjsme11"><span aria-hidden="true" class="st-emotion-cache-8hkptd
+# eyeqlp50">📚</span><span class="st-emotion-cache-17lntkn eczjsme10">Промпты</span></a></div></li><li><div
+# class="st-emotion-cache-j7qwjs eczjsme12"><a data-testid="stSidebarNavLink" href="http://localhost:8501/billing"
+# class="st-emotion-cache-18l0hbk eczjsme11"><span aria-hidden="true" class="st-emotion-cache-8hkptd
+# eyeqlp50">📖</span><span class="st-emotion-cache-17lntkn eczjsme10">Биллинг</span></a></div></li></ul>'''
+
 st.sidebar.success("Select a page")
+# with st.sidebar:
+    # with st.echo():
+    # st.markdown(f"<a href=\"https://synupgptui.streamlit.app/prompts\"><span>:books:</span>Промты</a>", unsafe_allow_html=True)
+    # st.markdown(menu, unsafe_allow_html=True)
+    # st.markdown(f"<a data-testid=\"stSidebarNavLink\" href=\"http://localhost:8501/\" class=\"st-emotion-cache-nziaof eczjsme11\"><span class=\"st-emotion-cache-pkbazv eczjsme10\">main</span></a>", unsafe_allow_html=True)
+    # st.markdown(f"<div class=\"st-emotion-cache-j7qwjs eczjsme12\"><a data-testid=\"stSidebarNavLink\" href=\"http://localhost:8501/\" class=\"st-emotion-cache-nziaof eczjsme11\"><span aria-hidden=\"true\" class=\"st-emotion-cache-8hkptd eyeqlp50\">🏠</span><span class=\"st-emotion-cache-pkbazv eczjsme10\">Главная</span></a></div>", unsafe_allow_html=True)
 # st.write(f"You wrote {len(txt)} characters.")
 query = st.text_input("Введите запрос", '')
 # st.write("### similarity_search")
