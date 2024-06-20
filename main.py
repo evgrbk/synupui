@@ -391,8 +391,13 @@ def answer_function(topic, system=system, index_db=db, temp=0.2):
 
 import requests
 st.write("### Ваш баланс")
-res = requests.get('https://api.proxyapi.ru/proxyapi/balance') # Создаём переменную, в которую сохраним код состояния запрашиваемой страницы.
-st.write(res)
+headers = {"Authorization": "Bearer sk-SegLQz4AfKqK9o4reOmNNIarcbeOItWk"}
+res = requests.get('https://api.proxyapi.ru/proxyapi/balance', headers=headers) # Создаём переменную, в которую сохраним код состояния запрашиваемой страницы.
+
+# print(res.content)
+import json
+balance= json.loads(res.content)
+st.write(f'{balance["balance"]} рублей')
 # print(res) # Выводим код состояния
 st.write("### SYNERGY UPDATE")
 # system = st.text_input("Системный промт", '')
