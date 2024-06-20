@@ -53,7 +53,7 @@ menu()
 #     device.start(stream)
 #     print('playing')
 #     time.sleep(length)
-openai.api_key = "sk-84kAJqBm1S2hQQArg8JZxD74RYV3SXso"  #
+openai.api_key = "sk-SegLQz4AfKqK9o4reOmNNIarcbeOItWk"  #
 os.environ["OPENAI_API_KEY"] = openai.api_key
 openai.base_url = "https://api.proxyapi.ru/openai/v1"
 os.environ["OPENAI_BASE_URL"] = openai.base_url
@@ -206,15 +206,33 @@ def create_index_db():
         source_chunks.append(Document(page_content=chunk, metadata={}))
 
     # Initializing the embedding model
-    embeddings = OpenAIEmbeddings()
+    #pip install sentence-transformers
+    #pip install -U langchain-huggingface
+    # embeddings = OpenAIEmbeddings()
+    # from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
+    from langchain_huggingface import HuggingFaceEmbeddings
+
+    # pkl = db.serialize_to_bytes()  # serializes the faiss
+    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
     # Create an index db from separated text fragments
-    db = FAISS.from_documents(source_chunks, embeddings)
+    # db = FAISS.from_documents(source_chunks, embeddings)
+    # db.save_local("faiss_index")
+    db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
+    #
+
+    # if not db:
+    #     st.write("faiss_index не существует")
+    #     db = FAISS.from_documents(source_chunks, embeddings)
+    #     db.save_local("faiss_index")
+        # db = FAISS.from_documents(source_chunks, embeddings)
+    # db.save_local("faiss_index")
+
     return db
 
 
 db = create_index_db()
-#
+# db =''
 function_descriptions = [
     {
         "name": "get_dish",
@@ -370,6 +388,12 @@ def answer_function(topic, system=system, index_db=db, temp=0.2):
 # # functionResult
 #
 # topic = 'маркетинг'
+
+import requests
+st.write("### Ваш баланс")
+res = requests.get('https://api.proxyapi.ru/proxyapi/balance') # Создаём переменную, в которую сохраним код состояния запрашиваемой страницы.
+st.write(res)
+# print(res) # Выводим код состояния
 st.write("### SYNERGY UPDATE")
 # system = st.text_input("Системный промт", '')
 system = st.text_area(
@@ -452,7 +476,8 @@ st.title('SYNUP')
 # class="st-emotion-cache-18l0hbk eczjsme11"><span aria-hidden="true" class="st-emotion-cache-8hkptd
 # eyeqlp50">📖</span><span class="st-emotion-cache-17lntkn eczjsme10">Биллинг</span></a></div></li></ul>'''
 
-st.sidebar.success("Select a page")
+# st.sidebar.success("Select a page")
+
 # with st.sidebar:
     # with st.echo():
     # st.markdown(f"<a href=\"https://synupgptui.streamlit.app/prompts\"><span>:books:</span>Промты</a>", unsafe_allow_html=True)
@@ -470,8 +495,8 @@ query = st.text_input("Введите запрос", '')
 # st.write(message_content)
 
 answer = ''
-# if query:
-    # answer, completion = answer_function(topic=query, system=system)  # получите ответ модели
+if query:
+    answer, completion = answer_function(topic=query, system=system)  # получите ответ модели
 
 # print(answer)
 

@@ -6,3 +6,5 @@ tiktoken
 langchain-community
 langchain-openai
 SQLAlchemy
+requests
+langchain-huggingface
