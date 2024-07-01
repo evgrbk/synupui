@@ -5,8 +5,6 @@ import streamlit as st
 import os
 import getpass
 import re
-import json
-import requests
 from datetime import datetime, timedelta, timezone
 # from langchain.vectorstores import FAISS
 from langchain.text_splitter import CharacterTextSplitter
@@ -24,6 +22,7 @@ from sqlalchemy import text
 # from st_pages import show_pages_from_config
 # show_pages_from_config()
 from menu import menu
+
 menu()
 # from langchain_openai import ChatOpenAI,OpenAIEmbedding
 # from langchain_community.chat_models import ChatOpenAI
@@ -56,6 +55,7 @@ menu()
 openai.api_key = "sk-SegLQz4AfKqK9o4reOmNNIarcbeOItWk"  #
 os.environ["OPENAI_API_KEY"] = openai.api_key
 openai.base_url = "https://api.proxyapi.ru/openai/v1"
+# openai.base_url = "https://api.oai.synergy.ru/v1"
 os.environ["OPENAI_BASE_URL"] = openai.base_url
 #
 # # Промт
@@ -199,21 +199,35 @@ Cсылка(url) курса Adobe Photoshop: https://synergyupgrade.ru/product/a
 #
 # Функция создания индексной базы знаний
 def create_index_db():
+    f = open('dataset_paragraphs.txt', 'r', encoding='utf-8')
+    # try:
+    # with open('dataset_paragraphs.txt') as f:
+    dataset = f.read()
+    # finally:
+    f.close()
+    #
+    # loader = TextLoader(file_path, encoding='utf-8')
+    # data = loader.load()
+    #
+    # text_splitter = RecursiveCharacterTextSplitter(chunk_size=256, chunk_overlap=100)
+    #
+    # # text_splitter = RecursiveCharacterTextSplitter()
+    # documents = text_splitter.split_documents(data)
     source_chunks = []
-    splitter = CharacterTextSplitter(separator="\n", chunk_size=512, chunk_overlap=0)
+    splitter = CharacterTextSplitter(separator="\n", chunk_size=1028, chunk_overlap=0)
 
-    for chunk in splitter.split_text(database):
+    for chunk in splitter.split_text(dataset):
         source_chunks.append(Document(page_content=chunk, metadata={}))
 
     # Initializing the embedding model
-    #pip install sentence-transformers
-    #pip install -U langchain-huggingface
-    # embeddings = OpenAIEmbeddings()
+    # pip install sentence-transformers
+    # pip install -U langchain-huggingface
+    embeddings = OpenAIEmbeddings()
     # from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
-    from langchain_huggingface import HuggingFaceEmbeddings
+    # from langchain_huggingface import HuggingFaceEmbeddings
 
     # pkl = db.serialize_to_bytes()  # serializes the faiss
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    # embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
     # Create an index db from separated text fragments
     # db = FAISS.from_documents(source_chunks, embeddings)
@@ -225,14 +239,17 @@ def create_index_db():
     #     st.write("faiss_index не существует")
     #     db = FAISS.from_documents(source_chunks, embeddings)
     #     db.save_local("faiss_index")
-        # db = FAISS.from_documents(source_chunks, embeddings)
+    # db = FAISS.from_documents(source_chunks, embeddings)
     # db.save_local("faiss_index")
 
     return db
 
+db = ''
+try:
+    db = create_index_db()
+except Exception as e:
+    print("Error: %s" % (type(e)))
 
-db = create_index_db()
-# db =''
 function_descriptions = [
     {
         "name": "get_dish",
@@ -272,7 +289,7 @@ function_descriptions = [
 #
 #
 # # Запрос в ChatGPT с использованием функций
-def answer_function(topic, system=system, index_db=db, temp=0.2):
+def answer_function(topic, system=system, index_db=db, temp=0.2, model='gpt-4o'):
     # Поиск релевантных отрезков из базы знаний
     docs = index_db.similarity_search(topic, k=5)
 
@@ -293,7 +310,12 @@ def answer_function(topic, system=system, index_db=db, temp=0.2):
     )
     completion = client.chat.completions.create(
         messages=messages,
-        model="gpt-4o",
+        # model="gpt-4o",
+        # model="gpt-3.5-turbo-16k",
+        # model="gpt-3.5-turbo-0125",
+        # model="gpt-3.5-turbo-1106",
+        model=model,
+        # model="gpt-3.5-turbo-0613",
         temperature=temp,
         max_tokens=1000
         # functions=function_descriptions,  # Add function calling
@@ -390,14 +412,23 @@ def answer_function(topic, system=system, index_db=db, temp=0.2):
 # topic = 'маркетинг'
 
 import requests
+
 st.write("### Ваш баланс")
 headers = {"Authorization": "Bearer sk-SegLQz4AfKqK9o4reOmNNIarcbeOItWk"}
-res = requests.get('https://api.proxyapi.ru/proxyapi/balance', headers=headers) # Создаём переменную, в которую сохраним код состояния запрашиваемой страницы.
+res = requests.get('https://api.proxyapi.ru/proxyapi/balance',
+                   headers=headers)  # Создаём переменную, в которую сохраним код состояния запрашиваемой страницы.
 
 # print(res.content)
 import json
-balance= json.loads(res.content)
+
+balance = json.loads(res.content)
 st.write(f'{balance["balance"]} рублей')
+
+model = st.selectbox(
+    "Выбрать модель",
+    ("gpt-4o", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-1106"))
+
+st.write("You selected:", model)
 # print(res) # Выводим код состояния
 st.write("### SYNERGY UPDATE")
 # system = st.text_input("Системный промт", '')
@@ -456,6 +487,7 @@ if st.button('Сохранить'):
         s.commit()
     # st.rerun()
     st.success('Промт успешно сохранен!')
+
 st.title('SYNUP')
 # from st_pages import Page, show_pages, add_page_title
 # from pathlib import Path
@@ -484,11 +516,11 @@ st.title('SYNUP')
 # st.sidebar.success("Select a page")
 
 # with st.sidebar:
-    # with st.echo():
-    # st.markdown(f"<a href=\"https://synupgptui.streamlit.app/prompts\"><span>:books:</span>Промты</a>", unsafe_allow_html=True)
-    # st.markdown(menu, unsafe_allow_html=True)
-    # st.markdown(f"<a data-testid=\"stSidebarNavLink\" href=\"http://localhost:8501/\" class=\"st-emotion-cache-nziaof eczjsme11\"><span class=\"st-emotion-cache-pkbazv eczjsme10\">main</span></a>", unsafe_allow_html=True)
-    # st.markdown(f"<div class=\"st-emotion-cache-j7qwjs eczjsme12\"><a data-testid=\"stSidebarNavLink\" href=\"http://localhost:8501/\" class=\"st-emotion-cache-nziaof eczjsme11\"><span aria-hidden=\"true\" class=\"st-emotion-cache-8hkptd eyeqlp50\">🏠</span><span class=\"st-emotion-cache-pkbazv eczjsme10\">Главная</span></a></div>", unsafe_allow_html=True)
+# with st.echo():
+# st.markdown(f"<a href=\"https://synupgptui.streamlit.app/prompts\"><span>:books:</span>Промты</a>", unsafe_allow_html=True)
+# st.markdown(menu, unsafe_allow_html=True)
+# st.markdown(f"<a data-testid=\"stSidebarNavLink\" href=\"http://localhost:8501/\" class=\"st-emotion-cache-nziaof eczjsme11\"><span class=\"st-emotion-cache-pkbazv eczjsme10\">main</span></a>", unsafe_allow_html=True)
+# st.markdown(f"<div class=\"st-emotion-cache-j7qwjs eczjsme12\"><a data-testid=\"stSidebarNavLink\" href=\"http://localhost:8501/\" class=\"st-emotion-cache-nziaof eczjsme11\"><span aria-hidden=\"true\" class=\"st-emotion-cache-8hkptd eyeqlp50\">🏠</span><span class=\"st-emotion-cache-pkbazv eczjsme10\">Главная</span></a></div>", unsafe_allow_html=True)
 # st.write(f"You wrote {len(txt)} characters.")
 query = st.text_input("Введите запрос", '')
 # st.write("### similarity_search")
@@ -499,9 +531,10 @@ query = st.text_input("Введите запрос", '')
 #
 # st.write(message_content)
 
+
 answer = ''
 if query:
-    answer, completion = answer_function(topic=query, system=system)  # получите ответ модели
+    answer, completion = answer_function(topic=query, system=system, model=model)  # получите ответ модели
 
 # print(answer)
 
