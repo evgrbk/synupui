@@ -246,3 +246,4 @@ def create_dataset():
 st.write("\n\r")
 if st.button('Реиндексировать'):
     re_index_db()
+    st.write("Реиндексация прошла успешно!")

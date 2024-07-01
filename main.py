@@ -428,7 +428,7 @@ model = st.selectbox(
     "Выбрать модель",
     ("gpt-4o", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-1106"))
 
-st.write("You selected:", model)
+st.write("Вы выбрали:", model)
 # print(res) # Выводим код состояния
 st.write("### SYNERGY UPDATE")
 # system = st.text_input("Системный промт", '')
