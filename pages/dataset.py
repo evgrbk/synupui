@@ -227,7 +227,7 @@ def create_paragraph(course, accepted_fields):
 def create_dataset():
     if fields:
         conn = st.connection('course_db', type='sql')
-        courses = conn.query(f'select {', '.join(fields)} from courses limit 42', ttl=10)
+        courses = conn.query(f'select {", ".join(fields)} from courses limit 42', ttl=10)
         f = open('dataset_paragraphs.txt', 'w', encoding='utf-8')
         for index, row in courses.iterrows():
             paragraphs = create_paragraph(row, fields) + '\n\r'
